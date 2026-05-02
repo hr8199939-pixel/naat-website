@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Islamic Naat Library</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-50 p-4">
+
+<div class="max-w-3xl mx-auto">
+  <h1 class="text-3xl font-bold text-center text-green-800 mb-2">🌙 Islamic Naat Library</h1>
+  <p class="text-center mb-4">Hamd • Naat • Manqabat</p>
+
+  <input id="search" class="border p-2 w-full mb-2" placeholder="Search Naat..." />
+
+  <div class="grid gap-2 mb-4">
+    <input id="title" class="border p-2" placeholder="Title">
+    <select id="category" class="border p-2">
+      <option>Naat</option>
+      <option>Hamd</option>
+      <option>Manqabat</option>
+    </select>
+    <textarea id="lyrics" class="border p-2" placeholder="Lyrics"></textarea>
+    <button onclick="addPost()" class="bg-green-600 text-white p-2">Add</button>
+  </div>
+
+  <div id="posts"></div>
+</div>
+
+<script>
+let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+
+const sample = [
+ {title:"Ya Nabi Salam Alaika",category:"Naat",lyrics:"Ya Nabi Salam Alaika..."},
+ {title:"Mustafa Jane Rehmat",category:"Naat",lyrics:"Mustafa Jane Rehmat..."},
+ {title:"Allah Hu Allah Hu",category:"Hamd",lyrics:"Allah Hu Allah Hu..."},
+ {title:"Balaghal Ula",category:"Naat",lyrics:"Balaghal Ula..."},
+ {title:"Tajdar-e-Haram",category:"Naat",lyrics:"Tajdar-e-Haram..."}
+];
+
+if(posts.length === 0) posts = sample;
+
+function save(){
+ localStorage.setItem('posts', JSON.stringify(posts));
+ render();
+}
+
+function addPost(){
+ const t = document.getElementById('title').value;
+ const c = document.getElementById('category').value;
+ const l = document.getElementById('lyrics').value;
+ if(!t||!l) return;
+ posts.unshift({title:t,category:c,lyrics:l});
+ save();
+}
+
+function del(i){
+ posts.splice(i,1);
+ save();
+}
+
+function render(){
+ const q = document.getElementById('search').value?.toLowerCase() || "";
+ const box = document.getElementById('posts');
+ box.innerHTML = "";
+ posts.filter(p=>p.title.toLowerCase().includes(q)).forEach((p,i)=>{
+  box.innerHTML += `
+  <div class="bg-white p-3 mb-2 shadow">
+    <h2 class="font-bold">${p.title}</h2>
+    <small>${p.category}</small>
+    <pre>${p.lyrics}</pre>
+    <button onclick="del(${i})" class="text-red-500">Delete</button>
+  </div>`;
+ });
+}
+
+document.getElementById('search').addEventListener('input', render);
+render();
+</script>
+
+</body>
+</html>
